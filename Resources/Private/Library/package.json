@@ -1,0 +1,11 @@
+{
+  "name": "punktde-elastic-sync",
+  "version": "1.0.0",
+  "description": "Elasticdump and dependencies",
+  "devDependencies": {},
+  "author": "Punkt.de",
+  "license": "MIT",
+  "dependencies": {
+    "elasticdump": "^6.3"
+  }
+}

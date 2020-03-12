@@ -1,0 +1,26 @@
+PunktDe:
+  Elastic:
+    Sync:
+      elasticDumpPath: '%FLOW_PATH_PACKAGES%Application/PunktDe.Elastic.Sync/Resources/Private/Library/node_modules/.bin/elasticdump'
+      presets:
+        production:
+          remoteInstance:
+            # hostname or ip of the server with the remote flow instance
+            host: ~
+            # ssh username
+            user: ~
+            # ssh port
+            port: ~
+            # ssh options
+            sshOptions: ~
+            # path on the remote server
+            flowPath: ~
+            # flow-context on the remote server
+            flowContext: Production
+          elasticsearch:
+            scheme: '%env:ELASTICSEARCH_SCHEME%'
+            host: '%env:ELASTICSEARCH_HOST%'
+            port: '%env:ELASTICSEARCH_PORT%'
+          indices:
+            contentRepository:
+              indexName: 'neos'
