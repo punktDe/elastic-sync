@@ -1,6 +1,6 @@
 # PunktDe.Elastic.Sync
 
-[![Latest Stable Version](https://poser.pugx.org/punktDe/elastic-sync/v/stable)](https://packagist.org/packages/punktDe/elastic-sync) [![Total Downloads](https://poser.pugx.org/punktDe/elastic-sync/downloads)](https://packagist.org/packages/punktDe/elastic-sync) [![License](https://poser.pugx.org/punktDe/elastic-sync/license)](https://packagist.org/packages/punktDe/elastic-sync)
+[![Latest Stable Version](https://poser.pugx.org/punktde/elastic-sync/v/stable)](https://packagist.org/packages/punktde/elastic-sync) [![Total Downloads](https://poser.pugx.org/punktde/elastic-sync/downloads)](https://packagist.org/packages/punktde/elastic-sync) [![License](https://poser.pugx.org/punktde/elastic-sync/license)](https://packagist.org/packages/punktde/elastic-sync)
 
 The package uses [elasticsearch-dump](https://github.com/taskrabbit/elasticsearch-dump) to sync data from a remote Elasticsearch instance to local. If you are already using a tool to sync the database and assets from a remote Neos instance to your local dev instance, you can now also copy the needed Elasticsearch indices. That saves a lot of time needed otherwise for local indexing, especially on large projects.
 
