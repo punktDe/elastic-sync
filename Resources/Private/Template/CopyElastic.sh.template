@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 export NODE_TLS_REJECT_UNAUTHORIZED=0
 
-ssh {remoteInstance.sshOptions->f:format.raw()} -C -f -N -L 9210:{remoteConfiguration.elasticsearchHost}:{remoteConfiguration.elasticsearchPort} {remoteInstance.user}@{remoteInstance.host}
+ssh {remoteInstance.sshOptions->f:format.raw()} -C -f -N -L 127.0.0.1:9210:{remoteConfiguration.elasticsearchHost}:{remoteConfiguration.elasticsearchPort} {remoteInstance.user}@{remoteInstance.host}
 sshpid=$?
-trap "kill $sshpid" SIGTERM SIGINT
+trap "kill $sshpid" EXIT
 
 <f:for each="{indices}" as="index">
 {elasticDumpPath} \
@@ -17,5 +17,3 @@ trap "kill $sshpid" SIGTERM SIGINT
   --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index.local.indexName} \
   --type=data
 </f:for>
-
-kill $sshpid
