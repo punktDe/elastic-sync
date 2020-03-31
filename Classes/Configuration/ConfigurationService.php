@@ -35,17 +35,13 @@ class ConfigurationService
     /**
      * @param string $presetName
      * @return PresetConfiguration
-     * @throws SynchronizationException
+     * @throws ConfigurationException
      */
     public function getLocalConfiguration(string $presetName): PresetConfiguration
     {
         $this->consoleOutput->output('Validating local configuration ....');
-        try {
-            $localConfiguration = $this->presetConfigurationFactory->getLocalConfiguration($presetName);
-        } catch (ConfigurationException $exception) {
-            $this->consoleOutput->outputLine(sprintf('<error>Error while validating local settings:</error> %s', $exception->getMessage()));
-            throw new SynchronizationException($exception->getMessage(), 1583963777, $exception);
-        }
+        $localConfiguration = $this->presetConfigurationFactory->getLocalConfiguration($presetName);
+
         $this->consoleOutput->outputLine('<success>done</success>');
 
         return $localConfiguration;

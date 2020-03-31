@@ -43,6 +43,9 @@ class PresetConfigurationFactory
      */
     public function getLocalConfiguration(string $presetName): PresetConfiguration
     {
+        if (!isset($this->configuration[$presetName])) {
+            throw new ConfigurationException(sprintf('Preset with name "%s" does not exist. Available are "%s"', $presetName, implode(',', array_keys($this->configuration))), 1585646506);
+        }
         return new PresetConfiguration($this->configuration[$presetName] ?? [], $presetName);
     }
 

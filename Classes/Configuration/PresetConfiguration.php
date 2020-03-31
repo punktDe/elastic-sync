@@ -52,6 +52,10 @@ class PresetConfiguration
     {
         $this->presetName = $presetName;
 
+        if (!isset($presetConfiguration['remoteInstance']) || !is_array($presetConfiguration['remoteInstance'])) {
+            throw new ConfigurationException(sprintf('The configuration part "remoteInstance" for preset %s was not found. Please add this configuration.', $presetName), 1585642280);
+        }
+
         $this->remoteInstance = $presetConfiguration['remoteInstance'];
         $this->elasticsearchScheme = $presetConfiguration['elasticsearch']['scheme'] ?? $this->elasticsearchScheme;
         $this->elasticsearchPort = (int)($presetConfiguration['elasticsearch']['port'] ?? $this->elasticsearchPort);
