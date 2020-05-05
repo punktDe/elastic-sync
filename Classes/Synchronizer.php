@@ -65,8 +65,8 @@ class Synchronizer
         $remoteConfiguration = $this->configurationService->getRemoteConfiguration($presetName);
         $remoteInstanceConfiguration = $this->presetConfigurationFactory->getRemoteInstanceConfiguration($presetName);
 
-        $this->createAliases($localConfiguration);
         $this->compileAndRunCloneScript($remoteConfiguration, $localConfiguration, $remoteInstanceConfiguration);
+        $this->createAliases($localConfiguration);
     }
 
 
@@ -98,7 +98,7 @@ class Synchronizer
             ]);
 
             $script = $view->render();
-                system($script);
+            passthru($script);
         } catch (\Neos\FluidAdaptor\Exception $exception) {
             $this->consoleOutput->output('<error>%s</error>', [$exception->getMessage()]);
         }
