@@ -24,3 +24,7 @@ PunktDe:
           indices:
             contentRepository:
               indexName: 'neos'
+          postClone:
+            createAliases:
+              # After cloning the remote index, create the following aliases
+              neos-default: neos

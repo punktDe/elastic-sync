@@ -12,12 +12,16 @@ namespace PunktDe\Elastic\Sync\Service;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Http\Client\CurlEngine;
 use Neos\Flow\Http\Client\CurlEngineException;
+use Neos\Flow\Http\ContentStream;
 use Neos\Flow\Http\Exception;
 use Neos\Http\Factories\UriFactory;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use PunktDe\Elastic\Sync\Configuration\PresetConfiguration;
 use PunktDe\Elastic\Sync\Exception\HttpException;
 
+/**
+ * @Flow\Scope("singleton")
+ */
 class ElasticsearchService
 {
 
@@ -43,11 +47,7 @@ class ElasticsearchService
      */
     public function deleteIndex(PresetConfiguration $configuration, string $indexName): int
     {
-        $uri = $this->uriFactory->createUri('')
-            ->withScheme($configuration->getElasticsearchScheme())
-            ->withHost($configuration->getElasticsearchHost())
-            ->withPort($configuration->getElasticsearchPort())
-            ->withPath('/' . $indexName);
+        $uri = $this->getBaseUri($configuration)->withPath('/' . $indexName);
 
         $request = $this->serverRequestFactory->createServerRequest('DELETE', $uri);
         $response = (new CurlEngine())->sendRequest($request);
@@ -57,5 +57,43 @@ class ElasticsearchService
         }
 
         return (int)$response->getStatusCode();
+    }
+
+    /**
+     * @param PresetConfiguration $configuration
+     * @param string $aliasName
+     * @param string $indexName
+     * @return int
+     * @throws CurlEngineException
+     * @throws Exception
+     * @throws \JsonException
+     */
+    public function addAlias(PresetConfiguration $configuration, string $aliasName, string $indexName): int
+    {
+        $actions = [
+            'add' => [
+                'index' => $indexName,
+                'alias' => $aliasName
+            ]
+        ];
+
+        $uri = $this->getBaseUri($configuration)->withPath('/_aliases');
+        $request = $this->serverRequestFactory->createServerRequest('POST', $uri)
+            ->withBody(ContentStream::fromContents(json_encode($actions, JSON_THROW_ON_ERROR, 512)));
+        $response = (new CurlEngine())->sendRequest($request);
+
+        return $response->getStatusCode();
+    }
+
+    /**
+     * @param PresetConfiguration $configuration
+     * @return \Psr\Http\Message\UriInterface
+     */
+    private function getBaseUri(PresetConfiguration $configuration): \Psr\Http\Message\UriInterface
+    {
+        return $this->uriFactory->createUri('')
+            ->withScheme($configuration->getElasticsearchScheme())
+            ->withHost($configuration->getElasticsearchHost())
+            ->withPort($configuration->getElasticsearchPort());
     }
 }

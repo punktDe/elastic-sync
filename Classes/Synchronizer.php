@@ -14,8 +14,10 @@ use Neos\FluidAdaptor\View\StandaloneView;
 use PunktDe\Elastic\Sync\Configuration\ConfigurationService;
 use PunktDe\Elastic\Sync\Configuration\PresetConfiguration;
 use PunktDe\Elastic\Sync\Configuration\PresetConfigurationFactory;
+use PunktDe\Elastic\Sync\Configuration\RemoteInstanceConfiguration;
 use PunktDe\Elastic\Sync\Exception\ConfigurationException;
 use PunktDe\Elastic\Sync\Exception\SynchronizationException;
+use PunktDe\Elastic\Sync\Service\ElasticsearchService;
 
 class Synchronizer
 {
@@ -31,11 +33,6 @@ class Synchronizer
     protected $presetConfigurationFactory;
 
     /**
-     * @var string
-     */
-    protected $presetName;
-
-    /**
      * @Flow\InjectConfiguration(path="elasticDumpPath")
      * @var string
      */
@@ -47,6 +44,12 @@ class Synchronizer
      */
     protected $configurationService;
 
+    /**
+     * @Flow\Inject
+     * @var ElasticsearchService
+     */
+    protected $elasticSeacrhService;
+
     public function __construct()
     {
         $this->consoleOutput = new ConsoleOutput();
@@ -54,22 +57,26 @@ class Synchronizer
 
     /**
      * @param string $presetName
-     * @throws SynchronizationException
+     * @throws SynchronizationException|ConfigurationException
      */
     public function sync(string $presetName): void
     {
-        $this->presetName = $presetName;
-        $this->compileScript();
+        $localConfiguration = $this->configurationService->getLocalConfiguration($presetName);
+        $remoteConfiguration = $this->configurationService->getRemoteConfiguration($presetName);
+        $remoteInstanceConfiguration = $this->presetConfigurationFactory->getRemoteInstanceConfiguration($presetName);
+
+        $this->createAliases($localConfiguration);
+        $this->compileAndRunCloneScript($remoteConfiguration, $localConfiguration, $remoteInstanceConfiguration);
     }
 
+
     /**
-     * @throws SynchronizationException
+     * @param PresetConfiguration $remoteConfiguration
+     * @param PresetConfiguration $localConfiguration
+     * @param RemoteInstanceConfiguration $remoteInstanceConfiguration
      */
-    private function compileScript(): void
+    private function compileAndRunCloneScript(PresetConfiguration $remoteConfiguration, PresetConfiguration $localConfiguration, RemoteInstanceConfiguration $remoteInstanceConfiguration): void
     {
-        $localConfiguration = $this->configurationService->getLocalConfiguration($this->presetName);
-        $remoteConfiguration = $this->configurationService->getRemoteConfiguration($this->presetName);
-        $remoteInstanceConfiguration = $this->presetConfigurationFactory->getRemoteInstanceConfiguration($this->presetName);
 
         $indexConfiguration = [];
         foreach ($remoteConfiguration->getIndices() as $key => $index) {
@@ -91,9 +98,31 @@ class Synchronizer
             ]);
 
             $script = $view->render();
-            passthru($script);
+                system($script);
         } catch (\Neos\FluidAdaptor\Exception $exception) {
             $this->consoleOutput->output('<error>%s</error>', [$exception->getMessage()]);
+        }
+    }
+
+    /**
+     * @param PresetConfiguration $localConfiguration
+     * @throws \JsonException
+     * @throws \Neos\Flow\Http\Client\CurlEngineException
+     * @throws \Neos\Flow\Http\Exception
+     */
+    private function createAliases(PresetConfiguration $localConfiguration): void
+    {
+        $definedAliases = $localConfiguration->getPostCloneConfiguration('createAliases');
+
+        if (empty($definedAliases)) {
+            return;
+        }
+
+        $this->consoleOutput->outputLine('<b>Creating aliases</b>');
+
+        foreach ($definedAliases as $alias => $index) {
+            $this->elasticSeacrhService->addAlias($localConfiguration, $alias, $index);
+            $this->consoleOutput->outputLine('%s -> %s', [$alias, $index]);
         }
     }
 }

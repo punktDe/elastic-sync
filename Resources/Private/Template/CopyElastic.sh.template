@@ -6,11 +6,28 @@ sshpid=$?
 trap "kill $sshpid" EXIT
 
 <f:for each="{indices}" as="index">
+echo "-> Copying Index Settings (Errors can be ignored)"
+{elasticDumpPath} \
+  --input=http://127.0.0.1:9210/{index.remote.indexName}  \
+  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index.local.indexName}  \
+  --type=settings
+
+echo ""
+echo "-> Copying Index Template"
+{elasticDumpPath} \
+  --input=http://127.0.0.1:9210/{index.remote.indexName}  \
+  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index.local.indexName}  \
+  --type=template
+
+echo ""
+echo "-> Copying Index Mapping"
 {elasticDumpPath} \
   --input=http://127.0.0.1:9210/{index.remote.indexName}  \
   --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index.local.indexName}  \
   --type=mapping
 
+echo ""
+echo "-> Copying Index Data"
 {elasticDumpPath} \
   --limit=5000 \
   --input=http://127.0.0.1:9210/{index.remote.indexName}  \

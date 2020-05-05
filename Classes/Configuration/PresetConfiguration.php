@@ -38,9 +38,14 @@ class PresetConfiguration
     protected $indices = [];
 
     /**
+     * @var array
+     */
+    protected $postCloneConfiguration = [];
+
+    /**
      * @var string
      */
-    protected $presetName;
+    protected $presetName = '';
 
     /**
      * PresetConfiguration constructor.
@@ -64,7 +69,9 @@ class PresetConfiguration
         if (!isset($presetConfiguration['indices']) || !is_array($presetConfiguration['indices']) || count($presetConfiguration['indices']) === 0) {
             throw new ConfigurationException(sprintf('No %s indices are defined for this preset.', $presetName), 1564437332);
         }
+
         $this->indices = $presetConfiguration['indices'];
+        $this->postCloneConfiguration = $presetConfiguration['postClone'] ?? [];
     }
 
     /**
@@ -107,4 +114,16 @@ class PresetConfiguration
         return $this->presetName;
     }
 
+    /**
+     * @param string $postCloneStep
+     * @return array
+     */
+    public function getPostCloneConfiguration(string $postCloneStep = ''): ?array
+    {
+        if ($postCloneStep === '') {
+            return $this->postCloneConfiguration;
+        }
+
+        return $this->postCloneConfiguration[$postCloneStep] ?? [];
+    }
 }
