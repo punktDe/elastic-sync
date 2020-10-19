@@ -1,0 +1,3 @@
+ssh {remoteInstance.sshOptions->f:format.raw()} -C -N -L 127.0.0.1:9210:{remoteConfiguration.elasticsearchHost}:{remoteConfiguration.elasticsearchPort} {remoteInstance.user}@{remoteInstance.host} &
+sshpid=$!
+trap "kill $sshpid" EXIT

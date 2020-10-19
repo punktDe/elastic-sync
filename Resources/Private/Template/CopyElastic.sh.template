@@ -1,36 +1,46 @@
 #!/usr/bin/env bash
 export NODE_TLS_REJECT_UNAUTHORIZED=0
 
-ssh {remoteInstance.sshOptions->f:format.raw()} -C -N -L 127.0.0.1:9210:{remoteConfiguration.elasticsearchHost}:{remoteConfiguration.elasticsearchPort} {remoteInstance.user}@{remoteInstance.host} &
-sshpid=$!
-trap "kill $sshpid" EXIT
-
-<f:for each="{indices}" as="index">
-echo "-> Copying Index Settings (Errors can be ignored)"
+<f:for each="{indexConfigurations}" as="indexConfiguration" key="configurationKey">
+echo ""
+echo -e "\e[1m# Working on index configuration {configurationKey}"
+<f:for each="{indexConfiguration}" as="index">
+echo ""
+echo -e "\e[1m## Cloning index {index}"
+echo -e "\e[0m-> Copying Index Settings (Errors can be ignored)"
 {elasticDumpPath} \
-  --input=http://127.0.0.1:9210/{index.remote.indexName}  \
-  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index.local.indexName}  \
+  --input=http://127.0.0.1:9210/{index}  \
+  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index}  \
   --type=settings
 
 echo ""
-echo "-> Copying Index Template"
+echo -e "\e[4m-> Copying Index Template\e[0m"
 {elasticDumpPath} \
-  --input=http://127.0.0.1:9210/{index.remote.indexName}  \
-  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index.local.indexName}  \
+  --input=http://127.0.0.1:9210/{index}  \
+  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index}  \
   --type=template
 
 echo ""
-echo "-> Copying Index Mapping"
+echo -e "\e[4m-> Copying Index Mapping\e[0m"
 {elasticDumpPath} \
-  --input=http://127.0.0.1:9210/{index.remote.indexName}  \
-  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index.local.indexName}  \
+  --input=http://127.0.0.1:9210/{index}  \
+  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index}  \
   --type=mapping
 
 echo ""
-echo "-> Copying Index Data"
+echo -e "\e[4m-> Copying Index Data\e[0m"
 {elasticDumpPath} \
   --limit=5000 \
-  --input=http://127.0.0.1:9210/{index.remote.indexName}  \
-  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index.local.indexName} \
+  --input=http://127.0.0.1:9210/{index}  \
+  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index} \
   --type=data
+
+echo ""
+echo -e "\e[4m-> Copying Aliases\e[0m"
+{elasticDumpPath} \
+  --limit=5000 \
+  --input=http://127.0.0.1:9210/{index}  \
+  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort} \
+  --type=alias
+</f:for>
 </f:for>

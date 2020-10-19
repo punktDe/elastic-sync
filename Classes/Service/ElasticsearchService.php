@@ -8,7 +8,6 @@ namespace PunktDe\Elastic\Sync\Service;
  *  All rights reserved.
  */
 
-
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Http\Client\CurlEngine;
 use Neos\Flow\Http\Client\CurlEngineException;
@@ -17,7 +16,9 @@ use Neos\Flow\Http\Exception;
 use Neos\Http\Factories\UriFactory;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use PunktDe\Elastic\Sync\Configuration\PresetConfiguration;
+use PunktDe\Elastic\Sync\Exception\ElasticsearchException;
 use PunktDe\Elastic\Sync\Exception\HttpException;
+use PunktDe\Elastic\Sync\Exception\SynchronizationException;
 
 /**
  * @Flow\Scope("singleton")
@@ -57,6 +58,42 @@ class ElasticsearchService
         }
 
         return (int)$response->getStatusCode();
+    }
+
+    /**
+     * @param PresetConfiguration $configuration
+     * @param string $indexName
+     * @return array
+     * @throws CurlEngineException
+     * @throws Exception
+     * @throws ElasticsearchException
+     */
+    public function getIndices(PresetConfiguration $configuration, string $indexName): array
+    {
+        $uri = $this->getBaseUri($configuration)
+            ->withPath('/_cat/indices/' . $indexName)
+            ->withQuery('format=JSON');
+
+        $request = $this->serverRequestFactory->createServerRequest('GET', $uri);
+        $response = (new CurlEngine())->sendRequest($request);
+
+        $result = json_decode($response->getBody()->getContents(), true);
+        $this->checkForElasticsearchErrorObject($result);
+        return $result;
+    }
+
+    /**
+     * @param array $result
+     * @throws ElasticsearchException
+     */
+    public function checkForElasticsearchErrorObject(array $result): void
+    {
+        if (isset($result['error'])) {
+            $reason = current($result['error']['root_cause'])['reason'] ?? 'No Reason given';
+            $status = $result['status'] ?? 'Unknown status';
+
+            throw new ElasticsearchException(sprintf('Elasticsearch query failed with status "%s": %s', $status, $reason), 1603000587);
+        }
     }
 
     /**

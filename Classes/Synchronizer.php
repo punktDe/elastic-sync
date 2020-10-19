@@ -18,6 +18,7 @@ use PunktDe\Elastic\Sync\Configuration\RemoteInstanceConfiguration;
 use PunktDe\Elastic\Sync\Exception\ConfigurationException;
 use PunktDe\Elastic\Sync\Exception\SynchronizationException;
 use PunktDe\Elastic\Sync\Service\ElasticsearchService;
+use PunktDe\Elastic\Sync\Service\ShellCommandService;
 
 class Synchronizer
 {
@@ -50,6 +51,12 @@ class Synchronizer
      */
     protected $elasticSeacrhService;
 
+    /**
+     * @Flow\Inject
+     * @var ShellCommandService
+     */
+    protected $shellCommandService;
+
     public function __construct()
     {
         $this->consoleOutput = new ConsoleOutput();
@@ -65,8 +72,16 @@ class Synchronizer
         $remoteConfiguration = $this->configurationService->getRemoteConfiguration($presetName);
         $remoteInstanceConfiguration = $this->presetConfigurationFactory->getRemoteInstanceConfiguration($presetName);
 
-        $this->compileAndRunCloneScript($remoteConfiguration, $localConfiguration, $remoteInstanceConfiguration);
-        $this->createAliases($localConfiguration);
+        $sshTunnelPid = $this->shellCommandService->openSshTunnelToRemoteElasticsearchServer($remoteConfiguration, $remoteInstanceConfiguration);
+
+        try {
+            $this->compileAndRunCloneScript($remoteConfiguration, $localConfiguration, $remoteInstanceConfiguration);
+            $this->createAdditionalAliases($localConfiguration);
+        } catch (\Exception $exception) {
+            $this->consoleOutput->output('<error>%s</error>', [$exception->getMessage()]);
+        } finally {
+            $this->shellCommandService->closeSshTunnelToRemoteElasticsearchServer($sshTunnelPid);
+        }
     }
 
 
@@ -74,34 +89,31 @@ class Synchronizer
      * @param PresetConfiguration $remoteConfiguration
      * @param PresetConfiguration $localConfiguration
      * @param RemoteInstanceConfiguration $remoteInstanceConfiguration
+     * @throws SynchronizationException
+     * @throws \Neos\Flow\Http\Client\CurlEngineException
+     * @throws \Neos\Flow\Http\Exception
      */
     private function compileAndRunCloneScript(PresetConfiguration $remoteConfiguration, PresetConfiguration $localConfiguration, RemoteInstanceConfiguration $remoteInstanceConfiguration): void
     {
+        $tunneledRemoteConfiguration = $remoteConfiguration->withTunneledConnection();
 
-        $indexConfiguration = [];
+        $indexConfigurations = [];
         foreach ($remoteConfiguration->getIndices() as $key => $index) {
-            $indexConfiguration[$key] = [
-                'remote' => $index,
-                'local' => $localConfiguration->getIndices()[$key]
-            ];
+            $indexConfigurations[$key] = $this->checkAndExpandRemoteIndices($tunneledRemoteConfiguration, $index['indexName']);
         }
 
-        try {
-            $view = new StandaloneView();
-            $view->setTemplatePathAndFilename('resource://PunktDe.Elastic.Sync/Private/Template/CopyElastic.sh.template');
-            $view->assignMultiple([
-                'localConfiguration' => $localConfiguration,
-                'remoteConfiguration' => $remoteConfiguration,
-                'remoteInstance' => $remoteInstanceConfiguration,
-                'indices' => $indexConfiguration,
-                'elasticDumpPath' => $this->elasticDumpPath,
-            ]);
+        $view = new StandaloneView();
+        $view->setTemplatePathAndFilename('resource://PunktDe.Elastic.Sync/Private/Template/CopyElastic.sh.template');
+        $view->assignMultiple([
+            'localConfiguration' => $localConfiguration,
+            'remoteConfiguration' => $remoteConfiguration,
+            'remoteInstance' => $remoteInstanceConfiguration,
+            'indexConfigurations' => $indexConfigurations,
+            'elasticDumpPath' => $this->elasticDumpPath,
+        ]);
 
-            $script = $view->render();
-            passthru($script);
-        } catch (\Neos\FluidAdaptor\Exception $exception) {
-            $this->consoleOutput->output('<error>%s</error>', [$exception->getMessage()]);
-        }
+        $script = $view->render();
+        passthru($script);
     }
 
     /**
@@ -110,7 +122,7 @@ class Synchronizer
      * @throws \Neos\Flow\Http\Client\CurlEngineException
      * @throws \Neos\Flow\Http\Exception
      */
-    private function createAliases(PresetConfiguration $localConfiguration): void
+    private function createAdditionalAliases(PresetConfiguration $localConfiguration): void
     {
         $definedAliases = $localConfiguration->getPostCloneConfiguration('createAliases');
 
@@ -124,5 +136,24 @@ class Synchronizer
             $this->elasticSeacrhService->addAlias($localConfiguration, $alias, $index);
             $this->consoleOutput->outputLine('%s -> %s', [$alias, $index]);
         }
+    }
+
+    /**
+     * @param PresetConfiguration $remoteConfiguration
+     * @param string $indexTarget
+     * @return array
+     * @throws SynchronizationException
+     * @throws \Neos\Flow\Http\Client\CurlEngineException
+     * @throws \Neos\Flow\Http\Exception
+     */
+    private function checkAndExpandRemoteIndices(PresetConfiguration $remoteConfiguration, string $indexTarget): array
+    {
+        $indices = $this->elasticSeacrhService->getIndices($remoteConfiguration, $indexTarget);
+
+        if (empty($indices)) {
+            throw new SynchronizationException(sprintf('No index was found with the pattern "%s" on the remote server.', $indices), 1602999099);
+        }
+
+        return array_column($indices, 'index');
     }
 }

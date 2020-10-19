@@ -10,6 +10,9 @@ namespace PunktDe\Elastic\Sync\Configuration;
 
 use PunktDe\Elastic\Sync\Exception\ConfigurationException;
 
+/*
+ * Defines a clone preset including the remote elasticearch configuration
+ */
 class PresetConfiguration
 {
     /**
@@ -125,5 +128,16 @@ class PresetConfiguration
         }
 
         return $this->postCloneConfiguration[$postCloneStep] ?? [];
+    }
+
+    /**
+     * @return $this
+     */
+    public function withTunneledConnection(): self
+    {
+        $new = clone $this;
+        $new->elasticsearchPort = 9210;
+        $new->elasticsearchHost = '127.0.0.1';
+        return $new;
     }
 }

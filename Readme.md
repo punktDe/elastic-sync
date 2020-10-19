@@ -9,7 +9,7 @@ The package uses [elasticsearch-dump](https://github.com/taskrabbit/elasticsearc
 How the package works:
 
 1. It gathers the Elasticsearch sync configuration from the remote server
-2. Establishs a ssh tunnel to the remote server and syncs the index mapping and data through it
+2. Establishs a ssh tunnel to the remote server and syncs the index mapping, data and aliases through it
 
 ## Installation
 
@@ -25,10 +25,23 @@ Install the required JavaScript library:
 
 You can add several presets. A preset consists of three parts
 
-* **remoteInstance** Configures how the remote server and the remote installation can be reached.
-* **elasticsearch** Describes how the Eleasticsearch server instance can be reached. For the remote instance, the config is fetched from there.
-* **indices** Several indices to be fetched can be defined
+**remoteInstance** 
+   
+Configures how the remote server and the remote installation can be reached.
 
+**elasticsearch** 
+
+Describes how the Elasticsearch server instance can be reached. For the remote instance, the config is fetched from there.
+
+**indices** 
+
+Several indices to be fetched can be defined. The index name can contain '*' to define a group of indices:
+
+Example for cloning the content repository indices for all content dimensions, including all aliases: 
+
+    indices:
+      contentRepository:
+        indexName: 'neos*' 
 
 ## Usage
 
