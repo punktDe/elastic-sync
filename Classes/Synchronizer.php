@@ -10,7 +10,9 @@ namespace PunktDe\Elastic\Sync;
 
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Cli\ConsoleOutput;
+use Neos\Flow\Utility\Environment;
 use Neos\FluidAdaptor\View\StandaloneView;
+use Neos\Utility\Files;
 use PunktDe\Elastic\Sync\Configuration\ConfigurationService;
 use PunktDe\Elastic\Sync\Configuration\PresetConfiguration;
 use PunktDe\Elastic\Sync\Configuration\PresetConfigurationFactory;
@@ -56,6 +58,12 @@ class Synchronizer
      * @var ShellCommandService
      */
     protected $shellCommandService;
+
+    /**
+     * @Flow\Inject
+     * @var Environment
+     */
+    protected $environment;
 
     public function __construct()
     {
