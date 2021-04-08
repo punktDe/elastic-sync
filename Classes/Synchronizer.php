@@ -112,8 +112,12 @@ class Synchronizer
             'elasticDumpPath' => $this->elasticDumpPath,
         ]);
 
-        $script = $view->render();
-        passthru($script);
+        $tmpFilePath = Files::concatenatePaths([$this->environment->getPathToTemporaryDirectory(),'elastic_sync']);
+        file_put_contents($tmpFilePath, $view->render());
+        chmod($tmpFilePath, 0777);
+
+        passthru($tmpFilePath);
+        unlink($tmpFilePath);
     }
 
     /**
