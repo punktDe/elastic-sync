@@ -16,13 +16,13 @@ How the package works:
 Install the package via composer
 
 ```bash
-  composer require punktde/elastic-sync
+composer require punktde/elastic-sync
 ```
 
 Install the required JavaScript library:
 
 ```bash
-  (cd Application/PunktDe.Elastic.Sync/Resources/Private/Library && npm install)
+(cd Application/PunktDe.Elastic.Sync/Resources/Private/Library && npm install)
 ```
 
 ## Configuration
@@ -52,5 +52,5 @@ indices:
 ## Usage
 
 ```bash
-  ./flow elastic:sync <preset>
+./flow elastic:sync <preset>
 ```
