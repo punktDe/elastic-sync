@@ -15,11 +15,15 @@ How the package works:
 
 Install the package via composer
 
-    $ composer require punktde/elastic-sync
-    
+```bash
+composer require punktde/elastic-sync
+```
+
 Install the required JavaScript library:
 
-	(cd Application/PunktDe.Elastic.Sync/Resources/Private/Library && npm install)
+```bash
+(cd Application/PunktDe.Elastic.Sync/Resources/Private/Library && npm install)
+```
 
 ## Configuration
 
@@ -39,10 +43,14 @@ Several indices to be fetched can be defined. The index name can contain '*' to 
 
 Example for cloning the content repository indices for all content dimensions, including all aliases: 
 
-    indices:
-      contentRepository:
-        indexName: 'neos*' 
+```yaml
+indices:
+  contentRepository:
+    indexName: 'neos*' 
+```
 
 ## Usage
 
-    ./flow elastic:sync <preset>
+```bash
+./flow elastic:sync <preset>
+```
