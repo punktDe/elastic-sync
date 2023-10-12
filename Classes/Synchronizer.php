@@ -106,7 +106,7 @@ class Synchronizer
         $tunneledRemoteConfiguration = $remoteConfiguration->withTunneledConnection();
 
         $indexConfigurations = [];
-        foreach ($remoteConfiguration->getIndices() as $key => $index) {
+        foreach ($localConfiguration->getIndices() as $key => $index) {
             $indexConfigurations[$key] = $this->checkAndExpandRemoteIndices($tunneledRemoteConfiguration, $index['indexName']);
         }
 

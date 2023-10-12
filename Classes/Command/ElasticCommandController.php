@@ -90,7 +90,7 @@ class ElasticCommandController extends CommandController
         $this->checkIfElasticDumpExists();
         $localConfiguration = $this->configurationService->getLocalConfiguration($preset);
 
-        if (!$yes && $this->output->askConfirmation(sprintf('Would you really like to remove and replace the index <b>%s</b> (y/n)?', implode(',', array_map(static function ($index) {
+        if (!$yes && $this->output->askConfirmation(sprintf('Would you really like to remove and replace the indices with pattern "%s" (y/n)?', implode(',', array_map(static function ($index) {
                 return $index['indexName'];
             }, $localConfiguration->getIndices()))), false) !== true) {
             $this->quit(1);
