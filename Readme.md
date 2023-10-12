@@ -22,7 +22,7 @@ composer require punktde/elastic-sync
 Install the required JavaScript library:
 
 ```bash
-(cd Application/PunktDe.Elastic.Sync/Resources/Private/Library && npm install)
+(cd Packages/Application/PunktDe.Elastic.Sync/Resources/Private/Library && npm install)
 ```
 
 ## Configuration
