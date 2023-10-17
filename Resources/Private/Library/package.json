@@ -6,6 +6,6 @@
   "author": "Punkt.de",
   "license": "MIT",
   "dependencies": {
-    "elasticdump": "^6.68.0"
+    "elasticdump": "^6.100.0"
   }
 }
