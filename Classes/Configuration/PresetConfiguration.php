@@ -37,7 +37,7 @@ class PresetConfiguration
 
     /**
      * PresetConfiguration constructor.
-     * @param mixed[] $presetConfiguration
+     * @param array $presetConfiguration
      * @param string $presetName
      * @throws ConfigurationException
      */
