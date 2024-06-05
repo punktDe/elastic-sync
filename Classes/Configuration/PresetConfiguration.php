@@ -36,9 +36,6 @@ class PresetConfiguration
     protected string $presetName = '';
 
     /**
-     * PresetConfiguration constructor.
-     * @param array $presetConfiguration
-     * @param string $presetName
      * @throws ConfigurationException
      */
     public function __construct(array $presetConfiguration, string $presetName)

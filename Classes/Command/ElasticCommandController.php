@@ -50,7 +50,7 @@ class ElasticCommandController extends CommandController
      * @throws Exception
      * @throws SynchronizationException
      */
-    public function syncCommand(string $preset, $yes = false): void
+    public function syncCommand(string $preset, bool $yes = false): void
     {
         try {
         $this->runSynchronisation($preset, $yes);

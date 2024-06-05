@@ -18,10 +18,6 @@ class RemoteInstanceConfiguration
 
     protected string $sshOptions;
 
-    /**
-     * RemoteInstanceConfiguration constructor.
-     * @param array $remoteInstanceConfiguration
-     */
     public function __construct(array $remoteInstanceConfiguration)
     {
         $this->user = $remoteInstanceConfiguration['user'] ?? '';
