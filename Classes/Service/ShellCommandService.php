@@ -19,13 +19,10 @@ use PunktDe\Elastic\Sync\Exception\SynchronizationException;
  */
 class ShellCommandService
 {
-    /**
-     * @var ConsoleOutput
-     */
-    protected $consoleOutput;
+    protected ConsoleOutput $consoleOutput;
 
     /**
-     * @var int
+     * @var int|null
      */
     protected $sshTunnelPid = null;
 
@@ -34,13 +31,6 @@ class ShellCommandService
         $this->consoleOutput = new ConsoleOutput();
     }
 
-    /**
-     * @param RemoteInstanceConfiguration $remoteInstanceConfiguration
-     * @param string $flowPath
-     * @param string $flowContext
-     * @param string $flowCommand
-     * @return string|null
-     */
     public function executeRemoteFlowCommand(RemoteInstanceConfiguration $remoteInstanceConfiguration, string $flowPath, string $flowContext, string $flowCommand): ?string
     {
         return $this->executeLocalShellCommand(
@@ -57,11 +47,6 @@ class ShellCommandService
         );
     }
 
-    /**
-     * @param PresetConfiguration $remoteConfiguration
-     * @param RemoteInstanceConfiguration $remoteInstanceConfiguration
-     * @return int
-     */
     public function openSshTunnelToRemoteElasticsearchServer(PresetConfiguration $remoteConfiguration, RemoteInstanceConfiguration $remoteInstanceConfiguration): int
     {
         $result = $this->executeLocalShellCommand(
@@ -84,8 +69,6 @@ echo $sshpid
     }
 
     /**
-     * @param int|null $sshTunnelPid
-     * @return string
      * @throws SynchronizationException
      */
     public function closeSshTunnelToRemoteElasticsearchServer(int $sshTunnelPid = null): ?string
@@ -97,11 +80,6 @@ echo $sshpid
         return $this->executeLocalShellCommand('kill %s', [$sshTunnelPid]);
     }
 
-    /**
-     * @param string $command
-     * @param array $arguments
-     * @return string|null
-     */
     public function executeLocalShellCommand(string $command, array $arguments = []): ?string
     {
         $shellCommand = vsprintf($command, $arguments);

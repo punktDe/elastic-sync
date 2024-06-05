@@ -20,39 +20,24 @@ class PresetConfiguration
      */
     protected $remoteInstance;
 
-    /**
-     * @var string
-     */
-    protected $elasticsearchScheme = 'http';
+    protected string $elasticsearchScheme = 'http';
 
-    /**
-     * @var string
-     */
-    protected $elasticsearchHost = 'localhost';
+    protected string $elasticsearchHost = 'localhost';
 
-    /**
-     * @var string
-     */
-    protected $elasticsearchPort = 9200;
+    protected int $elasticsearchPort = 9200;
 
     /**
      * @var string[]
      */
     protected $indices = [];
 
-    /**
-     * @var array
-     */
-    protected $postCloneConfiguration = [];
+    protected array $postCloneConfiguration = [];
 
-    /**
-     * @var string
-     */
-    protected $presetName = '';
+    protected string $presetName = '';
 
     /**
      * PresetConfiguration constructor.
-     * @param array $presetConfiguration
+     * @param mixed[] $presetConfiguration
      * @param string $presetName
      * @throws ConfigurationException
      */
@@ -66,7 +51,7 @@ class PresetConfiguration
 
         $this->remoteInstance = $presetConfiguration['remoteInstance'];
         $this->elasticsearchScheme = $presetConfiguration['elasticsearch']['scheme'] ?? $this->elasticsearchScheme;
-        $this->elasticsearchPort = (int)($presetConfiguration['elasticsearch']['port'] ?? $this->elasticsearchPort);
+        $this->elasticsearchPort = (int)$presetConfiguration['elasticsearch']['port'] ?? $this->elasticsearchPort;
         $this->elasticsearchHost = $presetConfiguration['elasticsearch']['host'] ?? $this->elasticsearchHost;
 
         if (!isset($presetConfiguration['indices']) || !is_array($presetConfiguration['indices']) || count($presetConfiguration['indices']) === 0) {
@@ -77,25 +62,16 @@ class PresetConfiguration
         $this->postCloneConfiguration = $presetConfiguration['postClone'] ?? [];
     }
 
-    /**
-     * @return string
-     */
     public function getElasticsearchScheme(): string
     {
         return $this->elasticsearchScheme;
     }
 
-    /**
-     * @return string
-     */
     public function getElasticsearchHost(): string
     {
         return $this->elasticsearchHost;
     }
 
-    /**
-     * @return string
-     */
     public function getElasticsearchPort(): int
     {
         return $this->elasticsearchPort;
@@ -109,19 +85,12 @@ class PresetConfiguration
         return $this->indices;
     }
 
-    /**
-     * @return string
-     */
     public function getPresetName(): string
     {
         return $this->presetName;
     }
 
-    /**
-     * @param string $postCloneStep
-     * @return array
-     */
-    public function getPostCloneConfiguration(string $postCloneStep = ''): ?array
+    public function getPostCloneConfiguration(string $postCloneStep = ''): array
     {
         if ($postCloneStep === '') {
             return $this->postCloneConfiguration;
@@ -130,9 +99,6 @@ class PresetConfiguration
         return $this->postCloneConfiguration[$postCloneStep] ?? [];
     }
 
-    /**
-     * @return $this
-     */
     public function withTunneledConnection(): self
     {
         $new = clone $this;

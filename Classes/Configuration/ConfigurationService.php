@@ -15,17 +15,12 @@ use PunktDe\Elastic\Sync\Exception\SynchronizationException;
 
 class ConfigurationService
 {
-
-    /**
-     * @var ConsoleOutput
-     */
-    protected $consoleOutput;
+    protected ConsoleOutput $consoleOutput;
 
     /**
      * @Flow\Inject
-     * @var PresetConfigurationFactory
      */
-    protected $presetConfigurationFactory;
+    protected PresetConfigurationFactory $presetConfigurationFactory;
 
     public function __construct()
     {
@@ -33,8 +28,6 @@ class ConfigurationService
     }
 
     /**
-     * @param string $presetName
-     * @return PresetConfiguration
      * @throws ConfigurationException
      */
     public function getLocalConfiguration(string $presetName): PresetConfiguration
@@ -48,8 +41,6 @@ class ConfigurationService
     }
 
     /**
-     * @param string $presetName
-     * @return PresetConfiguration
      * @throws SynchronizationException
      */
     public function getRemoteConfiguration(string $presetName): PresetConfiguration

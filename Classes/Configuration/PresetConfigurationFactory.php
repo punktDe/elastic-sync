@@ -23,22 +23,15 @@ class PresetConfigurationFactory
 
     /**
      * @Flow\Inject
-     * @var ShellCommandService
      */
-    protected $shellCommandService;
+    protected ShellCommandService $shellCommandService;
 
-    /**
-     * @param string $presetName
-     * @return RemoteInstanceConfiguration
-     */
     public function getRemoteInstanceConfiguration(string $presetName): RemoteInstanceConfiguration
     {
         return new RemoteInstanceConfiguration($this->configuration[$presetName]['remoteInstance'] ?? []);
     }
 
     /**
-     * @param string $presetName
-     * @return PresetConfiguration
      * @throws ConfigurationException
      */
     public function getLocalConfiguration(string $presetName): PresetConfiguration
@@ -50,8 +43,6 @@ class PresetConfigurationFactory
     }
 
     /**
-     * @param string $presetName
-     * @return PresetConfiguration
      * @throws ConfigurationException
      */
     public function getRemoteConfiguration(string $presetName): PresetConfiguration
