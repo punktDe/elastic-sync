@@ -11,11 +11,8 @@ namespace PunktDe\Elastic\Sync\Configuration;
 class RemoteInstanceConfiguration
 {
     protected string $host = '';
-
     protected string $user;
-
     protected int $port = 22;
-
     protected string $sshOptions;
 
     public function __construct(array $remoteInstanceConfiguration)

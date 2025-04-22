@@ -17,9 +17,7 @@ class ConfigurationService
 {
     protected ConsoleOutput $consoleOutput;
 
-    /**
-     * @Flow\Inject
-     */
+    #[Flow\Inject]
     protected PresetConfigurationFactory $presetConfigurationFactory;
 
     public function __construct()

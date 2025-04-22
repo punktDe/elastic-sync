@@ -24,24 +24,16 @@ use PunktDe\Elastic\Sync\Synchronizer;
  */
 class ElasticCommandController extends CommandController
 {
-    /**
-     * @Flow\InjectConfiguration(path="elasticDumpPath")
-     */
+    #[Flow\InjectConfiguration(path: 'elasticDumpPath')]
     protected string $elasticDumpPath;
 
-    /**
-     * @Flow\Inject
-     */
+    #[Flow\Inject]
     protected ElasticsearchService $elasticSearchService;
 
-    /**
-     * @Flow\Inject
-     */
+    #[Flow\Inject]
     protected ConfigurationService $configurationService;
 
-    /**
-     * @Flow\Inject
-     */
+    #[Flow\Inject]
     protected Synchronizer $synchronizer;
 
     /**
@@ -53,7 +45,7 @@ class ElasticCommandController extends CommandController
     public function syncCommand(string $preset, bool $yes = false): void
     {
         try {
-        $this->runSynchronisation($preset, $yes);
+            $this->runSynchronisation($preset, $yes);
         } catch (ConfigurationException $exception) {
             $this->outputLine('<error>Configuration Error: %s (%s)</error>', [$exception->getMessage(), $exception->getCode()]);
             $this->sendAndExit(1);

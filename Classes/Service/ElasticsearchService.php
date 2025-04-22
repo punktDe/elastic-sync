@@ -25,14 +25,9 @@ use PunktDe\Elastic\Sync\Exception\HttpException;
 class ElasticsearchService
 {
 
-    /**
-     * @Flow\Inject
-     */
+    #[Flow\Inject]
     protected ServerRequestFactoryInterface $serverRequestFactory;
-
-    /**
-     * @Flow\Inject
-     */
+    #[Flow\Inject]
     protected UriFactory $uriFactory;
 
     /**

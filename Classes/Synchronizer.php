@@ -26,34 +26,22 @@ class Synchronizer
 {
     protected ConsoleOutput $consoleOutput;
 
-    /**
-     * @Flow\Inject
-     */
+    #[Flow\Inject]
     protected PresetConfigurationFactory $presetConfigurationFactory;
 
-    /**
-     * @Flow\InjectConfiguration(path="elasticDumpPath")
-     */
+    #[Flow\InjectConfiguration(path: 'elasticDumpPath')]
     protected string $elasticDumpPath;
 
-    /**
-     * @Flow\Inject
-     */
+    #[Flow\Inject]
     protected ConfigurationService $configurationService;
 
-    /**
-     * @Flow\Inject
-     */
+    #[Flow\Inject]
     protected ElasticsearchService $elasticSeacrhService;
 
-    /**
-     * @Flow\Inject
-     */
+    #[Flow\Inject]
     protected ShellCommandService $shellCommandService;
 
-    /**
-     * @Flow\Inject
-     */
+    #[Flow\Inject]
     protected Environment $environment;
 
     public function __construct()
@@ -107,7 +95,7 @@ class Synchronizer
             'elasticDumpPath' => $this->elasticDumpPath,
         ]);
 
-        $tmpFilePath = Files::concatenatePaths([$this->environment->getPathToTemporaryDirectory(),'elastic_sync']);
+        $tmpFilePath = Files::concatenatePaths([$this->environment->getPathToTemporaryDirectory(), 'elastic_sync']);
         file_put_contents($tmpFilePath, $view->render());
         chmod($tmpFilePath, 0777);
 

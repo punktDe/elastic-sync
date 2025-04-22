@@ -16,14 +16,12 @@ use Symfony\Component\Yaml\Yaml;
 class PresetConfigurationFactory
 {
     /**
-     * @Flow\InjectConfiguration(path="presets")
      * @var string[][][]
      */
+    #[Flow\InjectConfiguration(path: 'presets')]
     protected $configuration;
 
-    /**
-     * @Flow\Inject
-     */
+    #[Flow\Inject]
     protected ShellCommandService $shellCommandService;
 
     public function getRemoteInstanceConfiguration(string $presetName): RemoteInstanceConfiguration

@@ -19,11 +19,8 @@ class PresetConfiguration
      * @var string[]
      */
     protected $remoteInstance;
-
     protected string $elasticsearchScheme = 'http';
-
     protected string $elasticsearchHost = 'localhost';
-
     protected int $elasticsearchPort = 9200;
 
     /**
@@ -32,7 +29,6 @@ class PresetConfiguration
     protected $indices = [];
 
     protected array $postCloneConfiguration = [];
-
     protected string $presetName = '';
 
     /**
