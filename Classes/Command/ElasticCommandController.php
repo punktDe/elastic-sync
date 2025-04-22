@@ -26,38 +26,31 @@ class ElasticCommandController extends CommandController
 {
     /**
      * @Flow\InjectConfiguration(path="elasticDumpPath")
-     * @var string
      */
-    protected $elasticDumpPath;
+    protected string $elasticDumpPath;
 
     /**
      * @Flow\Inject
-     * @var ElasticsearchService
      */
-    protected $elasticSearchService;
+    protected ElasticsearchService $elasticSearchService;
 
     /**
      * @Flow\Inject
-     * @var ConfigurationService
      */
-    protected $configurationService;
+    protected ConfigurationService $configurationService;
 
     /**
      * @Flow\Inject
-     * @var Synchronizer
      */
-    protected $synchronizer;
+    protected Synchronizer $synchronizer;
 
     /**
-     * @param string $preset
-     * @param bool $yes
-     * @return void
      * @throws StopCommandException
      * @throws CurlEngineException
      * @throws Exception
      * @throws SynchronizationException
      */
-    public function syncCommand(string $preset, $yes = false): void
+    public function syncCommand(string $preset, bool $yes = false): void
     {
         try {
         $this->runSynchronisation($preset, $yes);
@@ -77,8 +70,6 @@ class ElasticCommandController extends CommandController
     }
 
     /**
-     * @param string $preset
-     * @param bool $yes
      * @throws StopCommandException
      * @throws CurlEngineException
      * @throws Exception

@@ -18,7 +18,6 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use PunktDe\Elastic\Sync\Configuration\PresetConfiguration;
 use PunktDe\Elastic\Sync\Exception\ElasticsearchException;
 use PunktDe\Elastic\Sync\Exception\HttpException;
-use PunktDe\Elastic\Sync\Exception\SynchronizationException;
 
 /**
  * @Flow\Scope("singleton")
@@ -28,19 +27,15 @@ class ElasticsearchService
 
     /**
      * @Flow\Inject
-     * @var ServerRequestFactoryInterface
      */
-    protected $serverRequestFactory;
+    protected ServerRequestFactoryInterface $serverRequestFactory;
 
     /**
      * @Flow\Inject
-     * @var UriFactory
      */
-    protected $uriFactory;
+    protected UriFactory $uriFactory;
 
     /**
-     * @param PresetConfiguration $configuration
-     * @param string $indexName
      * @return int Status code
      * @throws CurlEngineException
      * @throws Exception
@@ -61,9 +56,6 @@ class ElasticsearchService
     }
 
     /**
-     * @param PresetConfiguration $configuration
-     * @param string $indexName
-     * @return array
      * @throws CurlEngineException
      * @throws Exception
      * @throws ElasticsearchException
@@ -83,7 +75,6 @@ class ElasticsearchService
     }
 
     /**
-     * @param array $result
      * @throws ElasticsearchException
      */
     public function checkForElasticsearchErrorObject(array $result): void
@@ -97,10 +88,6 @@ class ElasticsearchService
     }
 
     /**
-     * @param PresetConfiguration $configuration
-     * @param string $aliasName
-     * @param string $indexName
-     * @return int
      * @throws CurlEngineException
      * @throws Exception
      * @throws \JsonException
@@ -122,10 +109,6 @@ class ElasticsearchService
         return $response->getStatusCode();
     }
 
-    /**
-     * @param PresetConfiguration $configuration
-     * @return \Psr\Http\Message\UriInterface
-     */
     private function getBaseUri(PresetConfiguration $configuration): \Psr\Http\Message\UriInterface
     {
         return $this->uriFactory->createUri('')

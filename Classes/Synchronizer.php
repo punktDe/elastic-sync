@@ -24,46 +24,37 @@ use PunktDe\Elastic\Sync\Service\ShellCommandService;
 
 class Synchronizer
 {
-    /**
-     * @var ConsoleOutput
-     */
-    protected $consoleOutput;
+    protected ConsoleOutput $consoleOutput;
 
     /**
      * @Flow\Inject
-     * @var PresetConfigurationFactory
      */
-    protected $presetConfigurationFactory;
+    protected PresetConfigurationFactory $presetConfigurationFactory;
 
     /**
      * @Flow\InjectConfiguration(path="elasticDumpPath")
-     * @var string
      */
-    protected $elasticDumpPath;
+    protected string $elasticDumpPath;
 
     /**
      * @Flow\Inject
-     * @var ConfigurationService
      */
-    protected $configurationService;
+    protected ConfigurationService $configurationService;
 
     /**
      * @Flow\Inject
-     * @var ElasticsearchService
      */
-    protected $elasticSeacrhService;
+    protected ElasticsearchService $elasticSeacrhService;
 
     /**
      * @Flow\Inject
-     * @var ShellCommandService
      */
-    protected $shellCommandService;
+    protected ShellCommandService $shellCommandService;
 
     /**
      * @Flow\Inject
-     * @var Environment
      */
-    protected $environment;
+    protected Environment $environment;
 
     public function __construct()
     {
@@ -71,7 +62,6 @@ class Synchronizer
     }
 
     /**
-     * @param string $presetName
      * @throws SynchronizationException|ConfigurationException
      */
     public function sync(string $presetName): void
@@ -94,9 +84,6 @@ class Synchronizer
 
 
     /**
-     * @param PresetConfiguration $remoteConfiguration
-     * @param PresetConfiguration $localConfiguration
-     * @param RemoteInstanceConfiguration $remoteInstanceConfiguration
      * @throws SynchronizationException
      * @throws \Neos\Flow\Http\Client\CurlEngineException
      * @throws \Neos\Flow\Http\Exception
@@ -129,7 +116,6 @@ class Synchronizer
     }
 
     /**
-     * @param PresetConfiguration $localConfiguration
      * @throws \JsonException
      * @throws \Neos\Flow\Http\Client\CurlEngineException
      * @throws \Neos\Flow\Http\Exception
@@ -151,9 +137,6 @@ class Synchronizer
     }
 
     /**
-     * @param PresetConfiguration $remoteConfiguration
-     * @param string $indexTarget
-     * @return array
      * @throws SynchronizationException
      * @throws \Neos\Flow\Http\Client\CurlEngineException
      * @throws \Neos\Flow\Http\Exception
