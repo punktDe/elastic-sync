@@ -9,38 +9,38 @@ echo ""
 echo -e "\e[1m## Cloning index {index}"
 echo -e "\e[0m-> Copying Index Settings (Errors can be ignored)"
 {elasticDumpPath} \
-  --input=http://127.0.0.1:9210/{index}  \
-  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index}  \
+  --input={tunneledRemoteConfiguration.elasticsearchUri->f:format.raw()}/{index}  \
+  --output={localConfiguration.elasticsearchUri->f:format.raw()}/{index}  \
   --type=settings
 
 echo ""
 echo -e "\e[4m-> Copying Index Template\e[0m"
 {elasticDumpPath} \
-  --input=http://127.0.0.1:9210/{index}  \
-  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index}  \
+  --input={tunneledRemoteConfiguration.elasticsearchUri->f:format.raw()}/{index}  \
+  --output={localConfiguration.elasticsearchUri->f:format.raw()}/{index}  \
   --type=template
 
 echo ""
 echo -e "\e[4m-> Copying Index Mapping\e[0m"
 {elasticDumpPath} \
-  --input=http://127.0.0.1:9210/{index}  \
-  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index}  \
+  --input={tunneledRemoteConfiguration.elasticsearchUri->f:format.raw()}/{index}  \
+  --output={localConfiguration.elasticsearchUri->f:format.raw()}/{index}  \
   --type=mapping
 
 echo ""
 echo -e "\e[4m-> Copying Index Data\e[0m"
 {elasticDumpPath} \
   --limit=5000 \
-  --input=http://127.0.0.1:9210/{index}  \
-  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort}/{index} \
+  --input={tunneledRemoteConfiguration.elasticsearchUri->f:format.raw()}/{index}  \
+  --output={localConfiguration.elasticsearchUri->f:format.raw()}/{index} \
   --type=data
 
 echo ""
 echo -e "\e[4m-> Copying Aliases\e[0m"
 {elasticDumpPath} \
   --limit=5000 \
-  --input=http://127.0.0.1:9210/{index}  \
-  --output={localConfiguration.elasticsearchScheme}://{localConfiguration.elasticsearchHost}:{localConfiguration.elasticsearchPort} \
+  --input={tunneledRemoteConfiguration.elasticsearchUri->f:format.raw()}/{index}  \
+  --output={localConfiguration.elasticsearchUri->f:format.raw()} \
   --type=alias
 </f:for>
 </f:for>

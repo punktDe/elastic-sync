@@ -15,6 +15,8 @@ use Neos\Flow\Http\ContentStream;
 use Neos\Flow\Http\Exception;
 use Neos\Http\Factories\UriFactory;
 use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UriInterface;
 use PunktDe\Elastic\Sync\Configuration\PresetConfiguration;
 use PunktDe\Elastic\Sync\Exception\ElasticsearchException;
 use PunktDe\Elastic\Sync\Exception\HttpException;
@@ -40,7 +42,7 @@ class ElasticsearchService
     {
         $uri = $this->getBaseUri($configuration)->withPath('/' . $indexName);
 
-        $request = $this->serverRequestFactory->createServerRequest('DELETE', $uri);
+        $request = $this->createRequest($configuration, 'DELETE', $uri);
         $response = (new CurlEngine())->sendRequest($request);
 
         if ((int)$response->getStatusCode() !== 200 && (int)$response->getStatusCode() !== 404) {
@@ -61,7 +63,7 @@ class ElasticsearchService
             ->withPath('/_cat/indices/' . $indexName)
             ->withQuery('format=JSON');
 
-        $request = $this->serverRequestFactory->createServerRequest('GET', $uri);
+        $request = $this->createRequest($configuration, 'GET', $uri);
         $response = (new CurlEngine())->sendRequest($request);
 
         $result = json_decode($response->getBody()->getContents(), true);
@@ -97,18 +99,32 @@ class ElasticsearchService
         ];
 
         $uri = $this->getBaseUri($configuration)->withPath('/_aliases');
-        $request = $this->serverRequestFactory->createServerRequest('POST', $uri)
+        $request = $this->createRequest($configuration, 'POST', $uri)
             ->withBody(ContentStream::fromContents(json_encode($actions, JSON_THROW_ON_ERROR, 512)));
         $response = (new CurlEngine())->sendRequest($request);
 
         return $response->getStatusCode();
     }
 
-    private function getBaseUri(PresetConfiguration $configuration): \Psr\Http\Message\UriInterface
+    private function getBaseUri(PresetConfiguration $configuration): UriInterface
     {
         return $this->uriFactory->createUri('')
             ->withScheme($configuration->getElasticsearchScheme())
             ->withHost($configuration->getElasticsearchHost())
             ->withPort($configuration->getElasticsearchPort());
+    }
+
+    /**
+     * Creates a request which is authenticated with http basic auth, if credentials are configured
+     */
+    private function createRequest(PresetConfiguration $configuration, string $method, UriInterface $uri): ServerRequestInterface
+    {
+        $request = $this->serverRequestFactory->createServerRequest($method, $uri);
+
+        if (!$configuration->hasElasticsearchAuthentication()) {
+            return $request;
+        }
+
+        return $request->withHeader('Authorization', 'Basic ' . base64_encode($configuration->getElasticsearchUsername() . ':' . $configuration->getElasticsearchPassword()));
     }
 }

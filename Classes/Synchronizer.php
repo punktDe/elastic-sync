@@ -90,6 +90,7 @@ class Synchronizer
         $view->assignMultiple([
             'localConfiguration' => $localConfiguration,
             'remoteConfiguration' => $remoteConfiguration,
+            'tunneledRemoteConfiguration' => $tunneledRemoteConfiguration,
             'remoteInstance' => $remoteInstanceConfiguration,
             'indexConfigurations' => $indexConfigurations,
             'elasticDumpPath' => $this->elasticDumpPath,
@@ -97,7 +98,7 @@ class Synchronizer
 
         $tmpFilePath = Files::concatenatePaths([$this->environment->getPathToTemporaryDirectory(), 'elastic_sync']);
         file_put_contents($tmpFilePath, $view->render());
-        chmod($tmpFilePath, 0777);
+        chmod($tmpFilePath, 0700);
 
         passthru($tmpFilePath);
         unlink($tmpFilePath);
