@@ -22,6 +22,8 @@ class PresetConfiguration
     protected string $elasticsearchScheme = 'http';
     protected string $elasticsearchHost = 'localhost';
     protected int $elasticsearchPort = 9200;
+    protected string $elasticsearchUsername = '';
+    protected string $elasticsearchPassword = '';
 
     /**
      * @var string[]
@@ -46,6 +48,8 @@ class PresetConfiguration
         $this->elasticsearchScheme = $presetConfiguration['elasticsearch']['scheme'] ?? $this->elasticsearchScheme;
         $this->elasticsearchPort = (int)$presetConfiguration['elasticsearch']['port'] ?? $this->elasticsearchPort;
         $this->elasticsearchHost = $presetConfiguration['elasticsearch']['host'] ?? $this->elasticsearchHost;
+        $this->elasticsearchUsername = (string)($presetConfiguration['elasticsearch']['username'] ?? $this->elasticsearchUsername);
+        $this->elasticsearchPassword = (string)($presetConfiguration['elasticsearch']['password'] ?? $this->elasticsearchPassword);
 
         if (!isset($presetConfiguration['indices']) || !is_array($presetConfiguration['indices']) || count($presetConfiguration['indices']) === 0) {
             throw new ConfigurationException(sprintf('No %s indices are defined for this preset.', $presetName), 1564437332);
@@ -68,6 +72,33 @@ class PresetConfiguration
     public function getElasticsearchPort(): int
     {
         return $this->elasticsearchPort;
+    }
+
+    public function getElasticsearchUsername(): string
+    {
+        return $this->elasticsearchUsername;
+    }
+
+    public function getElasticsearchPassword(): string
+    {
+        return $this->elasticsearchPassword;
+    }
+
+    public function hasElasticsearchAuthentication(): bool
+    {
+        return $this->elasticsearchUsername !== '';
+    }
+
+    /**
+     * The complete base uri of the Elasticsearch instance, including the credentials if authentication is configured
+     */
+    public function getElasticsearchUri(): string
+    {
+        $credentials = $this->hasElasticsearchAuthentication()
+            ? sprintf('%s:%s@', rawurlencode($this->elasticsearchUsername), rawurlencode($this->elasticsearchPassword))
+            : '';
+
+        return sprintf('%s://%s%s:%d', $this->elasticsearchScheme, $credentials, $this->elasticsearchHost, $this->elasticsearchPort);
     }
 
     /**

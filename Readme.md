@@ -37,6 +37,20 @@ Configures how the remote server and the remote installation can be reached.
 
 Describes how the Elasticsearch server instance can be reached. For the remote instance, the config is fetched from there.
 
+If the Elasticsearch instance is protected by http basic authentication, configure `username` and `password`. This can be
+done separately for the local and the remote instance, as the remote configuration is read from the remote server:
+
+```yaml
+elasticsearch:
+  scheme: 'https'
+  host: 'elasticsearch.example.com'
+  port: 9200
+  username: 'elastic'
+  password: 'the-password'
+```
+
+Leave both empty to connect without authentication.
+
 **indices** 
 
 Several indices to be fetched can be defined. The index name can contain '*' to define a group of indices:

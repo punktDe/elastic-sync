@@ -21,6 +21,9 @@ PunktDe:
             scheme: '%env:ELASTICSEARCH_SCHEME%'
             host: '%env:ELASTICSEARCH_HOST%'
             port: '%env:ELASTICSEARCH_PORT%'
+            # username and password for http basic authenticated instances, leave empty for unauthenticated ones
+            username: ~
+            password: ~
           indices:
             contentRepository:
               indexName: 'neos*'
